@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Atualizar Empresa</h1>
+    <form class="form-style" action="{{ url_for('atualizar_empresa', id=empresa.id) }}" method="post">
+        <label for="nome_contato">Nome do Contato:</label><br>
+        <input type="text" id="nome_contato" name="nome_contato" value="{{ empresa.nome_contato }}"><br>
+        <label for="email_contato">Email do Contato:</label><br>
+        <input type="email" id="email_contato" name="email_contato" value="{{ empresa.email_contato }}"><br>
+        <label for="telefone_contato">Telefone do Contato:</label><br>
+        <input type="tel" id="telefone_contato" name="telefone_contato" value="{{ empresa.telefone_contato }}"><br>
+        <label for="endereco_empresa">Endereço da Empresa:</label><br>
+        <input type="text" id="endereco_empresa" name="endereco_empresa" value="{{ empresa.endereco_empresa }}"><br>
+        <label for="setor_atuacao">Setor de Atuação:</label><br>
+        <input type="text" id="setor_atuacao" name="setor_atuacao" value="{{ empresa.setor_atuacao }}"><br>
+        <label for="tamanho_empresa">Tamanho da Empresa:</label><br>
+        <input type="text" id="tamanho_empresa" name="tamanho_empresa" value="{{ empresa.tamanho_empresa }}"><br>
+        <label for="descricao_empresa">Descrição da Empresa:</label><br>
+        <textarea id="descricao_empresa" name="descricao_empresa">{{ empresa.descricao_empresa }}</textarea><br>
+        <label for="objetivos_principais">Objetivos Principais:</label><br>
+        <textarea id="objetivos_principais" name="objetivos_principais">{{ empresa.objetivos_principais }}</textarea><br>
+        <label for="historico_interacoes">Histórico de Interações:</label><br>
+        <textarea id="historico_interacoes" name="historico_interacoes">{{ empresa.historico_interacoes }}</textarea><br>
+        <label for="vincular_instagram">Vincular conta do Instagram:</label>
+        <select id="vincular_instagram" name="vincular_instagram"></select><br><br>
+        <label for="vincular_anuncio">Vincular conta de anúncios:</label>
+        <select id="vincular_anuncio" name="vincular_anuncio"></select><br><br>
+        
+        
+        <input type="submit" value="Atualizar">
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var empresasFacebook = JSON.parse(localStorage.getItem('empresasFacebook')) || [];
+            var selectInstagram = document.getElementById('vincular_instagram');
+    
+            // Adicionando opção em branco
+            var optVazioInstagram = document.createElement('option');
+            optVazioInstagram.value = '';
+            optVazioInstagram.innerHTML = '--- Selecione ---';
+            selectInstagram.appendChild(optVazioInstagram);
+    
+            empresasFacebook.forEach(function(empresa) {
+                var opt = document.createElement('option');
+                opt.value = empresa.name;
+                opt.innerHTML = empresa.name;
+                if (empresa.name == "{{ empresa.vincular_instagram }}") {
+                    opt.selected = true;
+                }
+                selectInstagram.appendChild(opt);
+            });
+        
+            var empresasAds = JSON.parse(localStorage.getItem('empresasAds')) || [];
+            var selectAnuncios = document.getElementById('vincular_anuncio');
+    
+            // Adicionando opção em branco
+            var optVazioAnuncios = document.createElement('option');
+            optVazioAnuncios.value = '';
+            optVazioAnuncios.innerHTML = '--- Selecione ---';
+            selectAnuncios.appendChild(optVazioAnuncios);
+    
+            empresasAds.forEach(function(nomeEmpresa) {
+                var opt = document.createElement('option');
+                opt.value = nomeEmpresa;
+                opt.innerHTML = nomeEmpresa;
+                if (nomeEmpresa == "{{ empresa.vincular_anuncio }}") {
+                    opt.selected = true;
+                }
+                selectAnuncios.appendChild(opt);
+            });
+        });
+    </script>
+{% endblock %}

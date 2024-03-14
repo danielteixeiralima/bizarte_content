@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Meta Ads Campanhas</h1>
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Data</th>
+                <th>Nome da Campanha</th>
+                <th>Nome do Conjunto de Anúncios</th>
+                <th>Nome do Anúncio</th>
+                <th>Perfil</th>
+                <th>Alcance</th>
+                <th>Frequência</th>
+                <th>Impressões</th>
+                <th>Custo</th>
+                <th>CPM</th>
+                <th>Cliques no Link</th>
+                <th>Cliques</th>
+                <th>CTR</th>
+                <th>CPLC</th>
+                <th>CPC</th>
+                <th>Ações de Inscrição</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for meta_ad in todos_meta_ads %}
+            <tr>
+                <td>{{ meta_ad.date.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>{{ meta_ad.adcampaign_name }}</td>
+                <td>{{ meta_ad.adset_name }}</td>
+                <td>{{ meta_ad.ad_name }}</td>
+                <td>{{ meta_ad.profile }}</td>
+                <td>{{ meta_ad.reach }}</td>
+                <td>{{ meta_ad.frequency }}</td>
+                <td>{{ meta_ad.impressions }}</td>
+                <td>{{ meta_ad.cost }}</td>
+                <td>{{ meta_ad.cpm }}</td>
+                <td>{{ meta_ad.action_link_click }}</td>
+                <td>{{ meta_ad.clicks }}</td>
+                <td>{{ meta_ad.ctr }}</td>
+                <td>{{ meta_ad.cplc }}</td>
+                <td>{{ meta_ad.cpc }}</td>
+                <td>{{ meta_ad.action_subscribe }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

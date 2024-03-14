@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sua Aplicação</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+</head>
+<body>
+    <header class="bg-light py-3">
+        <nav class="container navbar navbar-expand-lg navbar-light">
+            <a class="navbar-brand font-weight-bold" href="/">Bizarte Content</a>
+            <div class="ml-auto">
+                <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="container my-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4">Automação e Inteligência para o seu Conteúdo</h1>
+                <p class="lead">Revolucione a maneira como você cria e publica conteúdo. Com a Bizarte Content, obtenha artigos escritos de forma autônoma e inteligente, sempre alinhados às últimas tendências do seu mercado.
+</p></p>
+            </div>
+            <div class="col-lg-6">
+                <img src="{{ url_for('static', filename='img_1.png') }}" alt="Tendências do Google Trends" class="img-fluid">
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de Funcionalidades do Produto -->
+<!-- Seção de Funcionalidades do Produto -->
+    <section class="my-5">
+        <div class="container text-center">
+            <h2 class="mb-4">Funcionalidades do Produto</h2>
+            <p class="lead mb-5">O que o Bizarte Content faz.</p>
+            <div class="row">
+                <!-- Card para Conversões de Áudio para Texto -->
+                <div class="col-md-4 mb-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <img src="{{ url_for('static', filename='img_2.png') }}" alt="Conversões de Áudio para Texto" class="img-fluid mb-3">
+                            <h5 class="card-title">Extração Inteligente de Conteúdo</h5>
+                            <p class="card-text">A Bizarte Content vasculha a vastidão digital para trazer até você os insights mais relevantes do seu tema escolhido. Com nossa IA, você tem acesso a um fluxo contínuo de informações atualizadas, permitindo a criação de artigos que estão sempre sincronizados com as últimas tendências e discussões do seu nicho de mercado.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card para Colaboração em Tempo Real -->
+                <div class="col-md-4 mb-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <img src="{{ url_for('static', filename='img_3.png') }}" alt="Colaboração em Tempo Real" class="img-fluid mb-3">
+                            <h5 class="card-title">Adaptação ao Estilo de Escrita</h5>
+                            <p class="card-text">Seu estilo, nossa inteligência. O Bizarte Content não só agrega conteúdo relevante, mas também aprende e adapta-se ao seu estilo de escrita único. Personalize a voz dos seus artigos com a nossa IA, que molda o conteúdo extraído para que ele ressoe mais autenticamente com a sua marca e o seu público.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card para Análise Avançada -->
+                <div class="col-md-4 mb-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <img src="{{ url_for('static', filename='img_4.png') }}" alt="Análise Avançada" class="img-fluid mb-3">
+                            <h5 class="card-title">Atualizações Baseadas em Tendências</h5>
+                            <p class="card-text">Mantenha seu conteúdo na crista da onda. O Bizarte Content está sempre alerta, trazendo para a sua estratégia de conteúdo as novidades mais frescas do seu campo. Através de uma análise contínua da internet, garantimos que você se mantenha informado e relevante, com artigos que lideram conversas e engajam leitores.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Repita os cards para outras funcionalidades se necessário -->
+            </div>
+        </div>
+    </section>
+                <!-- Repita os cards para outras funcionalidades -->
+            </div>
+        </div>
+    </section>
+    <!-- Seção de Tecnologias Usadas -->
+    <section class="my-5 text-light" style="background-color: #123456;">
+        <div class="container">
+            <div class="row">
+                <!-- Coluna de texto -->
+                <div class="col-md-6 my-auto">
+                    <h2 class="mb-3">Ferramentas de ponta para todos</h2>
+                    <p class="mb-4">Com Bizarte Content, utilize as ferramentas mais inovadoras para criar conteúdos que capturam tendências e engajam audiências.</p>
+                    <div class="d-flex flex-column">
+                        <div class="mb-2">
+                            <span class="badge badge-pill badge-primary">+</span> Google Trends para análise de tendências
+                        </div>
+                        <div class="mb-2">
+                            <span class="badge badge-pill badge-primary">+</span> Google Search para pesquisa abrangente
+                        </div>
+                        <div class="mb-2">
+                            <span class="badge badge-pill badge-primary">+</span> ChatGPT-4 para geração de conteúdo inteligente
+                        </div>
+                        <!-- Adicione mais itens conforme necessário -->
+                    </div>
+                </div>
+                <!-- Coluna de imagem -->
+                <div class="col-md-6 text-center">
+                    <img src="{{ url_for('static', filename='img_5.png') }}" alt="Ferramentas Avançadas" class="img-fluid" style="max-height: 400px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Seção de Trends do Momento -->
+    <!-- Seção de Trends do Momento -->
+    <section class="trends-section py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Funcionalidades Futuras</h2>
+            <div class="row">
+                <!-- Cartão de Tendência 1 - Tecnologia -->
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='img_7.png') }}" class="card-img-top" alt="Tecnologia">
+                        <div class="card-body">
+                            <h5 class="card-title">Análise Social Profunda</h5>
+                            <p class="card-text">Com a nova integração com redes sociais, o Bizarte Content não apenas analisará o conteúdo existente, mas também otimizará a estratégia de engajamento ao se adaptar dinamicamente às conversas e tendências sociais, criando uma ressonância mais profunda entre marca e comunidade.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Cartão de Tendência 2 - Saúde e Bem-estar -->
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='img_8.png') }}" class="card-img-top" alt="Saúde e Bem-estar">
+                        <div class="card-body">
+                            <h5 class="card-title">Construção de Marca Inteligente</h5>
+                            <p class="card-text">Além de gerar conteúdo relevante, o Bizarte Content ajudará na criação ou no refinamento do posicionamento de marca do cliente. Utilizando análises sociais e tendências de mercado, a aplicação desenvolverá uma voz de marca única que se destaca no mercado competitivo.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Cartão de Tendência 3 - Sustentabilidade Ambiental -->
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='img_9.png') }}" class="card-img-top" alt="Sustentabilidade Ambiental">
+                        <div class="card-body">
+                            <h5 class="card-title">Publicidade Direcionada por IA</h5>
+                            <p class="card-text">Integre-se perfeitamente com plataformas de anúncio e mapeamento de sites para lançar campanhas publicitárias poderosas. Com a Bizarte Content, aproveite a análise de tráfego de site e comportamento de compra para criar conteúdo publicitário altamente eficaz e personalizado.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Cartão de Tendência 4 - Desenvolvimento Urbano e Cidades Inteligentes -->
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-dark text-light py-3">
+        <div class="container text-center">
+            <p>&copy; 2023 Bizarte Content. Todos os direitos reservados.</p>
+            <div class="social-links">
+                <!-- Link para o site oficial com ícone de link -->
+                <a href="https://www.bizarte.ai/" target="_blank" class="text-light"><i class="fas fa-globe"></i> Bizarte</a> |
+                <!-- Link para Instagram com ícone -->
+                <a href="https://instagram.com/bizarte.ai?igshid=M2RkZGJiMzhjOQ==" target="_blank" class="text-light"><i class="fab fa-instagram"></i> Instagram</a> |
+                <!-- Link para LinkedIn com ícone -->
+                <a href="https://www.linkedin.com/company/bizarte/" target="_blank" class="text-light"><i class="fab fa-linkedin"></i> LinkedIn</a> |
+                <!-- Link para Twitter com ícone -->
+                <a href="https://www.twitter.com/seutwitter" target="_blank" class="text-light"><i class="fab fa-twitter"></i> Twitter</a>
+                <!-- Link para a página de documentação -->
+                <a href="{{ url_for('documentacao') }}" class="btn btn-secondary">Documentação</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and its dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lista de Posts</title>
+  <style>
+    /* Adicione seus estilos CSS aqui, se necessário */
+  </style>
+</head>
+<body>
+ 
+  
+  <br><br>
+  <table class="styled-table">
+
+  <select id="empresa" name="empresa">
+    {% for empresa in empresas %}
+      <option value="{{ empresa.nome_contato}}">{{ empresa.nome_contato }}</option>
+    {% endfor %}
+  </select>
+  <br>
+  <br>
+  <button id="filtrar-posts" onclick="getPosts()">Filtrar Posts</button>
+  <button id="analisar-posts" onclick="return confirm('O processo de análise de posts pode demorar um pouco e integra diretamente com o ChatGPT-4 por meio de API. Você deseja continuar?') && analisarPosts()">Analisar Posts</button>
+
+
+  <table>
+
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>Caption</th>
+        <th>Like Count</th>
+        <th>Comments Count</th>
+        <th>Reach</th>
+        <th>Percentage</th>
+        <th>Media Product Type</th>
+        <th>Plays</th>
+        <th>Saved</th>
+        <th>Nome da Empresa</th>
+      </tr>
+    </thead>
+    <tbody id="post-table-body" class="styled-table">
+      {% for post in posts %}
+      <tr>
+          <td>{{ post.timestamp }}</td>
+          <td>{{ post.caption }}</td>
+          <td>{{ post.like_count }}</td>
+          <td>{{ post.comments_count }}</td>
+          <td>{{ post.reach }}</td>
+          <td>{{ post.percentage }}</td>
+          <td>{{ post.media_product_type }}</td>
+          <td>{{ post.plays }}</td>
+          <td>{{ post.saved }}</td>
+          <td>{{ post.nome_empresa }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <script>
+
+    window.onload = function() {
+      fetch('/api/empresas')
+          .then(response => response.json())
+          .then(empresas => {
+              const selectEmpresa = document.getElementById('empresa');
+              empresas.forEach(empresa => {
+                  const option = document.createElement('option');
+                  option.value = empresa;
+                  option.text = empresa;
+                  selectEmpresa.appendChild(option);
+              });
+          });
+  }
+
+    async function filtraPosts() {
+      var empresa = document.getElementById('empresa').value;
+      var posts = await getPosts(empresa);
+      populateTable(posts);
+  }
+  
+  async function getPosts(empresa) {
+      let response = await fetch('/api/posts?empresa=' + empresa);
+      let data = await response.json();
+      return data;
+  }
+  
+  async function populateTable(data) {
+      var tbody = document.getElementById('post-table-body');
+      tbody.innerHTML = '';
+  
+      for (var i = 0; i < data.length; i++) {
+          var tr = document.createElement('tr');
+  
+          var fields = ['timestamp', 'caption', 'like_count', 'comments_count', 'reach', 'percentage', 'media_product_type', 'plays', 'saved', 'nome_empresa', 'analisado'];
+          for (var j = 0; j < fields.length; j++) {
+              var td = document.createElement('td');
+              td.textContent = data[i][fields[j]];
+              tr.appendChild(td);
+          }
+  
+          // Column for "Ações"
+          var tdAcoes = document.createElement('td');
+  
+          var buttonUpdate = document.createElement('button');
+          buttonUpdate.type = 'button';
+          buttonUpdate.className = 'btn btn-warning';
+          buttonUpdate.textContent = 'Atualizar';
+          buttonUpdate.setAttribute('data-id', data[i].id);
+          buttonUpdate.onclick = function() {
+              currentPostId = this.getAttribute('data-id');
+              updatePost();
+          };
+          tdAcoes.appendChild(buttonUpdate);
+  
+          var buttonDelete = document.createElement('button');
+          buttonDelete.type = 'button';
+          buttonDelete.className = 'btn btn-danger';
+          buttonDelete.textContent = 'Deletar';
+          buttonDelete.setAttribute('data-id', data[i].id);
+          buttonDelete.onclick = function() {
+              currentPostId = this.getAttribute('data-id');
+              deletePost();
+          };
+          tdAcoes.appendChild(buttonDelete);
+  
+          tr.appendChild(tdAcoes);
+          tbody.appendChild(tr);
+      }
+  }
+    document.getElementById('filtrar-posts').addEventListener('click', getPosts);
+
+    function getPosts() {
+      var empresa = document.getElementById('empresa').value;
+      
+      fetch('/api/posts?empresa=' + empresa)
+          .then(response => response.json())
+          .then(data => populateTable(data));
+          
+  }
+
+  async function saveAnaliseToServer() {
+    var analise = JSON.parse(localStorage.getItem('analise'));
+    var empresa = document.getElementById('empresa').value;
+
+    // Crie um objeto FormData para segurar os dados da análise
+    var formData = new FormData();
+    formData.append('data_criacao', new Date().toISOString());
+    formData.append('analise', JSON.stringify(analise));
+    formData.append('nome_empresa', empresa);
+  
+    // Faça a solicitação POST para o servidor
+    let response = await fetch('/api/salvar_analise', {
+      method: 'POST',
+      body: formData
+    });
+  
+    if (response.ok) {
+      console.log('Análise enviada com sucesso para o servidor');
+    } else {
+      console.log('Erro ao enviar a análise para o servidor:', response.status, response.statusText);
+    }
+  }
+
+  function analisarPosts() {
+    var empresa = document.getElementById('empresa').value;
+    fetch('/api/analise_posts?empresa=' + empresa)
+        .then(response => response.json())
+        .then(data => {
+            // Armazena a análise no localStorage para que possa ser acessada na próxima página
+            localStorage.setItem('analise', JSON.stringify(data));
+            // Navega para a página de visualização de análises
+            saveAnaliseToServer();
+            window.location.href = '/visualizar_analises';
+
+            
+        });
+  }
+  
+
+  function populateTable(data) {
+    var tbody = document.getElementById('post-table-body');
+    tbody.innerHTML = '';
+
+    // Cria um mapa para armazenar os IDs dos posts já adicionados
+    var addedPostIds = {};
+
+    for (var i = 0; i < data.length; i++) {
+        // Se o ID do post já foi adicionado, pular para o próximo
+        if (addedPostIds[data[i].id]) {
+            continue;
+        }
+
+        var tr = document.createElement('tr');
+        
+        var fields = ['timestamp', 'caption', 'like_count', 'comments_count', 'reach', 'percentage', 'media_product_type', 'plays', 'saved', 'nome_empresa'];
+        for (var j = 0; j < fields.length; j++) {
+            var td = document.createElement('td');
+            td.textContent = data[i][fields[j]];
+            tr.appendChild(td);
+        }
+
+        // Adicionar a linha ao corpo da tabela
+        tbody.appendChild(tr);
+
+        // Marcar o ID do post como adicionado
+        addedPostIds[data[i].id] = true;
+    }
+}
+  </script>
+
+{% endblock %}

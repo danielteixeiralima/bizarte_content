@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5 mb-5">
+
+    <!-- Extrair o primeiro parágrafo e usar como título -->
+    {% set primeiro_paragrafo = texto.texto.split('\n')[0] %}
+    <h1 class="mb-4">{{ primeiro_paragrafo }}</h1>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+
+            <!-- Dividir o restante do texto em parágrafos (excluindo o primeiro) -->
+            {% set paragrafos = texto.texto.split('\n')[1:] %}
+            {% set total_paragrafos = paragrafos|length %}
+
+            <!-- Calcular pontos de inserção das imagens -->
+            {% set intervalo = total_paragrafos // 4 %}
+            {% set posicao_imagem1 = intervalo %}
+            {% set posicao_imagem2 = posicao_imagem1 + intervalo %}
+            {% set posicao_imagem3 = posicao_imagem2 + intervalo %}
+
+            <!-- Iterar sobre cada parágrafo do texto (excluindo o primeiro) -->
+            {% for contador in range(total_paragrafos) %}
+                <p style="text-align: justify; font-size: 1rem; line-height: 1.8;">{{ paragrafos[contador] }}</p>
+
+                <!-- Inserir a primeira imagem após um certo número de parágrafos -->
+                {% if contador == posicao_imagem1 and texto.imagens0 %}
+                <figure class="figure mx-auto d-block" style="max-width: 600px;">
+                    <img src="data:image/png;base64,{{ texto.imagens0 | b64encode }}" alt="Imagem 0" class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption text-center">Legenda da Imagem 0</figcaption>
+                </figure>
+                {% endif %}
+
+                <!-- Inserir a segunda imagem após mais alguns parágrafos -->
+                {% if contador == posicao_imagem2 and texto.imagens1 %}
+                <figure class="figure mx-auto d-block" style="max-width: 600px;">
+                    <img src="data:image/png;base64,{{ texto.imagens1 | b64encode }}" alt="Imagem 1" class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption text-center">Legenda da Imagem 1</figcaption>
+                </figure>
+                {% endif %}
+
+                <!-- Inserir a terceira imagem ainda mais adiante -->
+                {% if contador == posicao_imagem3 and texto.imagens2 %}
+                <figure class="figure mx-auto d-block" style="max-width: 600px;">
+                    <img src="data:image/png;base64,{{ texto.imagens2 | b64encode }}" alt="Imagem 2" class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption text-center">Legenda da Imagem 2</figcaption>
+                </figure>
+                {% endif %}
+
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

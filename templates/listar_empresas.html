@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Empresas</h1>
+    <a class="btn" href="{{ url_for('cadastrar_empresa') }}">Cadastrar nova empresa</a>
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>Nome do Contato</th>
+                <th>Email do Contato</th>
+                <th>Telefone do Contato</th>
+                <th>Endereço da Empresa</th>
+                <th>Setor de Atuação</th>
+                <th>Tamanho da Empresa</th>
+                <th>Descrição da Empresa</th>
+                <th>Objetivos Principais</th>
+                <th>Histórico de Interações</th>
+                <th>Instagram</th>
+                <th>Anúncio</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for empresa in empresas %}
+            <tr>
+                <td>{{ empresa.nome_contato }}</td>
+                <td>{{ empresa.email_contato }}</td>
+                <td>{{ empresa.telefone_contato }}</td>
+                <td>{{ empresa.endereco_empresa }}</td>
+                <td>{{ empresa.setor_atuacao }}</td>
+                <td>{{ empresa.tamanho_empresa }}</td>
+                <td>{{ empresa.descricao_empresa }}</td>
+                <td>{{ empresa.objetivos_principais }}</td>
+                <td>{{ empresa.historico_interacoes }}</td>
+                <td>{{ "Sim" if empresa.vincular_instagram else "Não" }}</td>
+                <td>{{ "Sim" if empresa.vincular_anuncio else "Não" }}</td>
+                <td>
+                    <a href="{{ url_for('atualizar_empresa', id=empresa.id) }}" class="btn btn-primary">Atualizar</a>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal{{empresa.id}}">Deletar</button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="deleteModal{{empresa.id}}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel">Deletar Empresa</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    Tem certeza que deseja deletar esta empresa?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+
+                                    <form action="{{ url_for('deletar_empresa', id=empresa.id) }}" method="POST">
+                                        <input type="submit" class="btn btn-danger" value="Sim, deletar">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

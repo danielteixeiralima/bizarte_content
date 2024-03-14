@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <meta charset="UTF-8">
+  <title>Relatório de Anúncios</title>
+  <style>
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+  background: #f4f4f4; /* Cor de fundo mais suave para a página */
+}
+
+.container {
+  max-width: 1500px; /* Limita a largura máxima para melhor leitura */
+  margin: 20px auto; /* Centraliza e adiciona espaço vertical */
+  background: #ffffff; /* Fundo claro para o contêiner */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  padding: 20px; /* Espaçamento interno */
+  border-radius: 8px; /* Bordas arredondadas */
+}
+
+h1 {
+  text-align: center;
+  color: #333; /* Cor escura para melhor contraste */
+  margin-bottom: 20px; /* Espaçamento abaixo do título */
+}
+
+.metrics {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap; /* Permite que os itens se ajustem em telas menores */
+  gap: 20px;
+  margin-top: 10px; /* Espaçamento entre os itens */
+}
+
+.metric {
+  flex: 1; /* Distribui o espaço igualmente */
+  min-width: 300px; /* Largura mínima para cada métrica */
+  background: #f9f9f9; /* Fundo claro para cada métrica */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  padding: 15px; /* Espaçamento interno */
+  border-radius: 5px; /* Bordas arredondadas */
+}
+
+.metric h2 {
+  color: #555; /* Cor escura para os títulos */
+  margin-bottom: 15px; /* Espaçamento abaixo do título */
+}
+
+.chart-container {
+  position: relative;
+  height: 400px; /* Altura ajustada para o gráfico */
+}
+
+.top-campaigns {
+  margin-top: 30px; /* Espaçamento acima da tabela */
+}
+
+.top-campaigns table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.top-campaigns th, .top-campaigns td {
+  border: 1px solid #e1e1e1; /* Cor mais suave para as bordas */
+  padding: 10px; /* Espaçamento maior para o conteúdo */
+  text-align: left;
+}
+
+.top-campaigns th {
+  background-color: #f7f7f7; /* Fundo mais claro para o cabeçalho */
+  color: #333; /* Cor escura para o texto */
+}
+
+.summary-metrics {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  gap: 20px; /* Espaço entre os elementos de métrica */
+}
+
+.summary-metric {
+  padding: 10px 20px; /* Ajuste no espaçamento interno */
+  margin-top: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  background-color: #f9f9f9; /* Fundo claro para as métricas */
+  flex: 1; /* Faz com que os elementos ocupem o espaço disponível igualmente */
+}
+
+.summary-metric.custo {
+  background-color: rgba(255, 99, 132, 0.2);
+}
+
+.summary-metric.cpm {
+  background-color: rgba(75, 192, 132, 0.2);
+}
+
+.summary-metric h3 {
+  color: #333;
+}
+
+.summary-metric p {
+  color: #666; /* Cor mais suave para o texto */
+  font-weight: bold;
+}
+
+.empresa-select {
+  text-align: center;
+  margin-bottom: 20px; /* Espaçamento abaixo do seletor de empresa */
+}
+
+.date-selection-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px; /* Espaçamento entre os elementos */
+}
+
+.date-input, .action-button {
+  padding: 5px;
+  border-radius: 5px; /* Bordas arredondadas */
+  border: 1px solid #ccc; /* Borda para melhor definição */
+}
+
+.action-button {
+  background-color: #4CAF50; /* Cor de fundo para o botão */
+  color: white; /* Cor do texto para o botão */
+  border: none; /* Remove a borda do botão */
+  cursor: pointer; /* Muda o cursor para indicar ação */
+  padding: 5px 15px; /* Ajuste no espaçamento interno */
+}
+
+.action-button:hover {
+  background-color: #45a049; /* Cor de fundo ao passar o mouse */
+}
+.summary-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  margin-top: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  flex: 1;
+}
+
+.summary-metric h3, .summary-metric p {
+  margin: 0; /* Remove margens padrão para centralizar o texto */
+  text-align: center; /* Centraliza o texto horizontalmente */
+}
+
+.summary-metric.ctr {
+  background-color: rgba(255, 159, 64, 0.2); /* Laranja fraco para CTR */
+}
+
+.summary-metric.cpc {
+  background-color: rgba(54, 162, 235, 0.2); /* Azul fraco para CPC */
+}
+
+.summary-metric.actions {
+  background-color: rgba(255, 255, 0, 0.2); /* Amarelo suave para Ações */
+}
+
+.summary-metric.cost-per-action {
+  background-color: rgba(255, 0, 0, 0.2); /* Vermelho suave para Custo por Ação */
+}
+
+
+    
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="empresa-select">
+      <select id="empresa" name="empresa">
+        {% for empresa in empresas %}
+          <option value="{{ empresa.vincular_anuncio }}">{{ empresa.nome_contato }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="date-selection-container">
+      <input type="date" id="startDate" class="date-input">
+      <input type="date" id="endDate" class="date-input">
+      <button onclick="fetchAds()" class="action-button">Selecionar</button>
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <h2 style="margin-left: 130px;">Custo & Impressões</h2>
+        <div class="chart-container">
+          <div class="summary-metrics">
+            <div class="summary-metric custo">
+              <h3>Valor Total</h3>
+              <p id="totalSpent">0</p>
+            </div>
+            <div class="summary-metric cpm">
+              <h3>CPM Total</h3>
+              <p id="totalCpm">0</p>
+            </div>
+          </div>
+          <canvas id="costImpressionsChart"></canvas>
+        </div>
+      </div>
+
+      <div class="metric">
+        <h2 style="margin-left: 180px;">Cliques</h2>
+        <div class="chart-container">
+          <!-- Adicionando subquadros para CTR e CPC -->
+          <div class="summary-metrics">
+            <div class="summary-metric ctr">
+              <h3>CTR (all)</h3>
+              <p id="averageCTR">0%</p>
+            </div>
+            <div class="summary-metric cpc">
+              <h3>CPC (all)</h3>
+              <p id="totalCPC">0</p>
+            </div>
+          </div>
+          <canvas id="clicksChart"></canvas>
+        </div>
+      </div>
+
+      <div class="metric">
+        <h2 style="margin-left: 185px;">Ações</h2>
+        <div class="chart-container">
+          <div class="summary-metrics">
+            <div class="summary-metric actions">
+              <h3>Ações (all)</h3>
+              <p id="totalActions">0</p>
+            </div>
+            <div class="summary-metric cost-per-action">
+              <h3>Custo por Ação</h3>
+              <p id="costPerAction">0</p>
+            </div>
+          </div>
+          <canvas id="actionsChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="top-campaigns">
+      <h2>Principais Campanhas</h2>
+      <table id="campaignsTable">
+        <thead>
+          <tr>
+            <th>Nome da Campanha</th>
+            <th>Valor total gasto</th>
+            <th>CPM</th>
+          </tr>
+        </thead>
+        <tbody id="campaignsTableBody">
+          <!-- Os dados da tabela serão inseridos dinamicamente -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+
+
+    <script>
+ function fetchAds() {
+  const selectedEmpresa = document.getElementById('empresa').value;
+  const startDate = document.getElementById('startDate').value;
+  const endDate = document.getElementById('endDate').value;
+  fetch(`/get_ads?empresa=${selectedEmpresa}&startDate=${startDate}&endDate=${endDate}`)
+    .then(response => response.json())
+    .then(data => {
+      const filteredData = filterAdsByDate(data, startDate, endDate);
+      updateSummaryMetrics(filteredData);
+      updateCampaignsTable(filteredData);
+      const dates = getDate(startDate, endDate);
+      const metricsValues = getMetricsValue(filteredData, dates);
+
+      const maxCpm = Math.max(...metricsValues.map(val => val.cpm));
+      const maxValor = Math.max(...metricsValues.map(val => val.valor));
+
+      drawGraph(maxCpm, maxValor, dates, metricsValues);
+
+      const ctrValues = metricsValues.map(val => val.ctr);
+      const cpcValues = metricsValues.map(val => val.cpc);
+      drawClicksGraph(ctrValues, cpcValues, dates);
+
+      const actionValues = metricsValues.map(val => val.landing);
+      const costPerActionValues = metricsValues.map(val => (val.valor / (val.landing || 1)).toFixed(2));
+      drawActionsGraph(actionValues, costPerActionValues, dates);
+    })
+    .catch(error => console.error('Erro ao buscar anúncios:', error));
+}
+
+
+
+
+
+function updateSummaryMetrics(filteredData) {
+  console.log("Anúncios: ",filteredData)
+  const totalCpm = filteredData.reduce((acc, ad) => {
+    console.log(`Somando: ${acc} + ${ad.landing}`);
+
+    return acc + ad.landing;
+  }, 0);
+  console.log("Total CPM calculado:", totalCpm);
+
+  const totalSpent = filteredData.reduce((acc, ad) => acc + ad.valor, 0);
+  const totalCtr = filteredData.reduce((acc, ad) => acc + ad.ctr, 0);
+  const totalCpc = filteredData.reduce((acc, ad) => acc + (ad.cpc || 0), 0);
+  const totalActions = filteredData.reduce((acc, ad) => acc + ad.landing, 0);
+  const costPerAction = totalActions > 0 ? totalSpent / totalActions : 0;
+  console.log("costPerAction: ",costPerAction)
+
+  document.getElementById('totalSpent').textContent = formatValue(totalSpent);
+  document.getElementById('totalCpm').textContent = formatValue(totalCpm.toFixed(2));
+  document.getElementById('averageCTR').textContent = formatPercentage(totalCtr / filteredData.length);
+  document.getElementById('totalCPC').textContent = formatValue(totalCpc.toFixed(2));
+  document.getElementById('totalActions').textContent = formatValue(totalActions);
+  document.getElementById('costPerAction').textContent = formatValue(costPerAction.toFixed(2));
+}
+
+
+function formatPercentage(value) {
+  return (value * 100).toFixed(2) + '%';
+}
+
+function filterAdsByDate(data, startDate, endDate) {
+  return data.filter(ad => ad.timestamp >= startDate && ad.timestamp <= endDate);
+}
+
+function getMaxCpm(data) {
+  return Math.max(...data.map(ad => ad.cpm));
+}
+
+function getMaxValor(data) {
+  return Math.max(...data.map(ad => ad.valor));
+}
+
+function updateCampaignsTable(data) {
+  const tableBody = document.getElementById('campaignsTableBody');
+  tableBody.innerHTML = '';
+  const campaigns = groupCampaigns(data);
+
+  let sumCpmInTable = 0; // Inicializa a soma dos CPMs das campanhas
+
+  campaigns.forEach(campaign => {
+    let row = tableBody.insertRow();
+    let cellName = row.insertCell(0);
+    let cellValue = row.insertCell(1);
+    let cellCpm = row.insertCell(2);
+    cellName.textContent = campaign.nome_campanha;
+    cellValue.textContent = formatValue(campaign.valor.toFixed(2));
+    cellCpm.textContent = campaign.cpm.toFixed(2);
+
+    sumCpmInTable += campaign.cpm; // Soma o CPM da campanha atual
+  });
+
+  console.log("Soma dos CPMs nas campanhas da tabela:", sumCpmInTable);
+}
+function groupCampaigns(anuncios) {
+  let campaigns = {};
+  anuncios.forEach(ad => {
+    if (!campaigns[ad.nome_campanha]) {
+      campaigns[ad.nome_campanha] = { valor: 0, cpm: 0 };
+    }
+    campaigns[ad.nome_campanha].valor += ad.valor;
+    campaigns[ad.nome_campanha].cpm += ad.cpm;  // Simplesmente acumula o CPM
+  });
+
+  return Object.entries(campaigns).map(([name, data]) => ({
+    nome_campanha: name,
+    valor: data.valor,
+    cpm: data.cpm  // Mantém o CPM acumulado
+  })).sort((a, b) => b.valor - a.valor);
+}
+
+
+
+function formatValue(value) {
+  return value >= 1000 ? (value / 1000).toFixed(1) + ' mil' : value.toString();
+}
+
+function getDate(startDate, endDate) {
+  const startDateObj = new Date(startDate + 'T00:00:00');
+  const endDateObj = new Date(endDate + 'T00:00:00');
+  const dateArray = [startDateObj];
+
+  const totalDays = (endDateObj - startDateObj) / (1000 * 60 * 60 * 24);
+  if (totalDays >= 3) {
+    let increment = totalDays / 4;
+    for (let i = 1; i <= 3; i++) {
+      let newDate = new Date(startDateObj);
+      newDate.setDate(startDateObj.getDate() + Math.round(increment * i));
+      dateArray.push(newDate);
+    }
+  } else if (totalDays === 2) {
+    let midDate = new Date(startDateObj);
+    midDate.setDate(startDateObj.getDate() + 1);
+    dateArray.push(midDate);
+  }
+
+  dateArray.push(endDateObj);
+
+  return dateArray.map(date => formatDateToGraph(date));
+}
+
+function formatDateToGraph(date) {
+  const options = { year: '2-digit', month: 'short', day: 'numeric' };
+  let dateString = date.toLocaleDateString('pt-BR', options);
+  dateString = dateString.replace(/(\d+)\sde\s(\w+)\.\sde\s(\d+)/, '$1/$2-$3');
+  return dateString.replace('.', '');
+}
+
+function drawGraph(maxCpm, maxValor, dates, values) {
+  const ctx = document.getElementById('costImpressionsChart').getContext('2d');
+  const dataCusto = values.map(value => value.valor);
+  const dataCpm = values.map(value => value.cpm);
+  console.log ("cpm: ",dataCpm)
+  if (window.costImpressionsChart instanceof Chart) {
+    window.costImpressionsChart.destroy();
+  }
+
+  window.costImpressionsChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [{
+        label: 'Custo',
+        data: dataCusto,
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        yAxisID: 'y',
+      }, {
+        label: 'CPM',
+        data: dataCpm,
+        borderColor: 'rgb(75, 192, 132)',
+        backgroundColor: 'rgba(75, 192, 132, 0.5)',
+        yAxisID: 'y1',
+      }]
+    },
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: 'Custo & CPM ao Longo do Tempo',
+          position: 'top',
+          align: 'center'
+        },
+        legend: {
+          display: true,
+          position: 'top',
+        }
+      },
+      scales: {
+        y: {
+          type: 'linear',
+          display: true,
+          position: 'left',
+          title: {
+            display: true,
+            text: 'Custo (moeda local)'
+          }
+        },
+        y1: {
+          type: 'linear',
+          display: true,
+          position: 'right',
+          grid: {
+            drawOnChartArea: false,
+          },
+          title: {
+            display: true,
+            text: 'CPM (Custo por Mil Impressões)'
+          }
+        },
+      },
+    }
+  });
+}
+
+function drawClicksGraph(ctrData, cpcData, labels) {
+  const ctx = document.getElementById('clicksChart').getContext('2d');
+  
+  if (window.clicksChart instanceof Chart) {
+    window.clicksChart.destroy();
+  }
+
+  console.log(ctrData);
+  console.log(cpcData);
+
+  window.clicksChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'CTR (%)',
+        data: ctrData,
+        borderColor: 'rgb(255, 159, 64)',
+        backgroundColor: 'rgba(255, 159, 64, 0.5)',
+        yAxisID: 'y',
+      }, {
+        label: 'CPC',
+        data: cpcData,
+        borderColor: 'rgb(54, 162, 235)',
+        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+        yAxisID: 'y1',
+      }]
+    },
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: 'CTR e CPC ao Longo do Tempo',
+          position: 'top',
+          align: 'center'
+        },
+        legend: {
+          display: true,
+          position: 'top',
+        }
+      },
+      scales: {
+        y: {
+          type: 'linear',
+          display: true,
+          position: 'left',
+          title: {
+            display: true,
+            text: 'CTR (%)'
+          },
+          ticks: {
+            callback: function(value) {
+              return value + '%';
+            }
+          }
+        },
+        y1: {
+          type: 'linear',
+          display: true,
+          position: 'right',
+          title: {
+            display: true,
+            text: 'CPC (moeda local)'
+          },
+          grid: {
+            drawOnChartArea: false,
+          }
+        },
+      },
+    }
+  });
+}
+
+
+// Você precisaria de uma função similar para "Ações", ajustando os parâmetros conforme necessário.
+
+
+function drawActionsGraph(actionData, costPerActionData, labels) {
+  const ctx = document.getElementById('actionsChart').getContext('2d');
+  console.log("Ações total: ", actionData)
+  console.log("Custo por ação: ",costPerActionData)
+  if (window.actionsChart instanceof Chart) {
+    window.actionsChart.destroy();
+  }
+
+  window.actionsChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Ações',
+        data: actionData,
+        borderColor: 'rgb(255, 255, 0)',
+        backgroundColor: 'rgba(255, 255, 0, 0.5)',
+        yAxisID: 'y',
+      }, {
+        label: 'Custo por Ação',
+        data: costPerActionData,
+        borderColor: 'rgb(255, 0, 0)',
+        backgroundColor: 'rgba(255, 0, 0, 0.5)',
+        yAxisID: 'y1',
+      }]
+    },
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: 'Ações e Custo por Ação ao Longo do Tempo',
+          position: 'top',
+          align: 'center'
+        },
+        legend: {
+          display: true,
+          position: 'top',
+        }
+      },
+      scales: {
+        y: {
+          type: 'linear',
+          display: true,
+          position: 'left',
+          title: {
+            display: true,
+            text: 'Ações'
+          }
+        },
+        y1: {
+          type: 'linear',
+          display: true,
+          position: 'right',
+          title: {
+            display: true,
+            text: 'Custo por Ação (moeda local)'
+          },
+          grid: {
+            drawOnChartArea: false,
+          }
+        },
+      },
+    }
+  });
+}
+
+// Adicione a chamada para drawActionsGraph na função fetchAds
+
+
+
+
+
+function getMetricsValue(filteredData, dates) {
+  const formatToTimestamp = dateStr => {
+    const [day, monthYear] = dateStr.split('/');
+    const [month, year] = monthYear.split('-');
+    const months = {
+      'jan': '01',
+      'fev': '02',
+      'mar': '03',
+      'abr': '04',
+      'mai': '05',
+      'jun': '06',
+      'jul': '07',
+      'ago': '08',
+      'set': '09',
+      'out': '10',
+      'nov': '11',
+      'dez': '12'
+    };
+    return `20${year}-` + months[month] + `-${day.padStart(2, '0')}`;
+  };
+
+  const averages = dates.map(date => {
+    const timestamp = formatToTimestamp(date);
+    const valuesForDate = filteredData.filter(ad => ad.timestamp.startsWith(timestamp));
+    const sumValues = valuesForDate.reduce((acc, ad) => {
+      return {
+        valor: acc.valor + ad.valor,
+        cpm: acc.cpm + ad.cpm,
+        ctr: acc.ctr + (ad.ctr || 0),
+        cpc: acc.cpc + ad.cpc,
+        landing: acc.landing + ad.landing
+      };
+    }, { valor: 0, cpm: 0, ctr: 0, cpc: 0, landing: 0 });
+
+    return {
+      valor: sumValues.valor,
+      cpm: sumValues.cpm,
+      ctr: sumValues.ctr,
+      cpc: sumValues.cpc,
+      landing: sumValues.landing
+    };
+  });
+
+  return averages;
+}
+
+
+    function getEquidistantDates(startDate, endDate, count) {
+  const diffTime = Math.abs(endDate - startDate);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const step = diffDays / (count - 1);
+  let dates = [];
+  for (let i = 0; i < count; i++) {
+    dates.push(new Date(startDate.getTime() + step * i * 1000 * 60 * 60 * 24));
+  }
+  return dates.map(date => formatDateToGraph(date));
+}
+
+
+      </script>
+      
+    
+    
+</body>
+</html>
+
+

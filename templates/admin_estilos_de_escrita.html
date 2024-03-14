@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Administração de Estilos de Escrita{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Estilos de Escrita</h2>
+    <form action="{{ url_for('admin_estilos_de_escrita') }}" method="post" class="mb-4">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.estilo.label(class='form-label') }}
+            <!-- Aumentando para 10 linhas -->
+            {{ form.estilo(rows=10, class='form-control') }} <!-- Altere 'rows' conforme necessário -->
+        </div>
+        <div class="form-group text-center">
+            {{ form.submit(class='btn btn-primary') }}
+        </div>
+    </form>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Estilo de Escrita</th>
+                    <th>Usuário</th>
+                    <th>Empresa</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for estilo in estilos %}
+                <tr>
+                    <td>{{ estilo.estilo|truncate(50) }}</td>
+                    <td>{{ estilo.usuario.username }}</td>
+                    <td>{{ estilo.empresa.nome_contato }}</td>
+                    <td>
+                        <a href="{{ url_for('editar_estilo', id=estilo.id) }}" class="btn btn-sm btn-outline-secondary">Editar</a>
+                        <button type="button" class="btn btn-sm btn-outline-danger confirm-delete" onclick="confirmDelete('{{ url_for('excluir_estilo', id=estilo.id) }}')">Excluir</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function confirmDelete(url) {
+        if (confirm('Tem certeza que deseja excluir este estilo de escrita?')) {
+            var form = document.createElement('form');
+            form.method = 'post';
+            form.action = url;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+</script>
+{% endblock %}

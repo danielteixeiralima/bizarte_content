@@ -1,0 +1,55 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center align-items-center" style="height:100vh">
+            <div class="col-4">
+                <h1 class="text-center mb-4 text-white">Cadastrar Empresa</h1>
+                <div class="card" style="background-color: #333;">
+                    <div class="card-body">
+                        <form class="form-style" action="{{ url_for('cadastrar_empresa') }}" method="post">
+                            <div class="form-group">
+                                <label for="nome_contato" style="color: black;">Nome do Contato:</label>
+                                <input type="text" class="form-control" id="nome_contato" name="nome_contato" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email_contato" style="color: black;">Email do Contato:</label>
+                                <input type="email" class="form-control" id="email_contato" name="email_contato" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="telefone_contato" style="color: black;">Telefone do Contato:</label>
+                                <input type="tel" class="form-control" id="telefone_contato" name="telefone_contato" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="endereco_empresa" style="color: black;">Endereço da Empresa:</label>
+                                <input type="text" class="form-control" id="endereco_empresa" name="endereco_empresa" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="setor_atuacao" style="color: black;">Setor de Atuação:</label>
+                                <input type="text" class="form-control" id="setor_atuacao" name="setor_atuacao" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="tamanho_empresa" style="color: black;">Tamanho da Empresa:</label>
+                                <input type="text" class="form-control" id="tamanho_empresa" name="tamanho_empresa" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="descricao_empresa" style="color: black;">Descrição da Empresa:</label>
+                                <textarea class="form-control" id="descricao_empresa" name="descricao_empresa" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="objetivos_principais" style="color: black;">Objetivos Principais:</label>
+                                <textarea class="form-control" id="objetivos_principais" name="objetivos_principais" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="historico_interacoes" style="color: black;">Histórico de Interações:</label>
+                                <textarea class="form-control" id="historico_interacoes" name="historico_interacoes" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Cadastrar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

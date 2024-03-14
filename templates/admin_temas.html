@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="admin-theme-wrapper my-4">
+    <div class="admin-theme-header mb-3">
+        <h2 class="text-center">Gerenciamento de Temas</h2>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="alert-messages mb-4">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="admin-theme-form mb-4">
+        <form method="post" class="form-inline justify-content-center">
+            {{ form.hidden_tag() }}
+            <div class="form-group mx-sm-3 mb-2">
+                {{ form.nome.label(class="sr-only") }}
+                {{ form.nome(class="form-control", placeholder="Nome do Tema") }}
+                {% if form.nome.errors %}
+                    <div class="invalid-feedback d-block">{{ form.nome.errors[0] }}</div>
+                {% endif %}
+            </div>
+            {{ form.submit(class="btn btn-success mb-2") }}
+        </form>
+    </div>
+
+    <div class="admin-theme-table">
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Nome do Tema</th>
+                    <th>Usuário</th>
+                    <th>Empresa</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tema in temas %}
+                    <tr>
+                        <td>{{ tema.nome }}</td>
+                        <td>{{ tema.usuario.username }}</td>
+                        <td>{{ tema.empresa.nome_contato }}</td>
+                        <td class="text-center">
+                            <a href="{{ url_for('editar_tema', id=tema.id) }}" class="btn btn-primary btn-sm">Editar</a>
+                            <form method="post" action="{{ url_for('excluir_tema', id=tema.id) }}" class="d-inline">
+                                <input type="submit" value="Excluir" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este tema?');">
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">Nenhum tema cadastrado.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

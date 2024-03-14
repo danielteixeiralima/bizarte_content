@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Dados do Instagram Social</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Profile ID</th>
+                <th>Data Source</th>
+                <th>Instagram ID</th>
+                <th>Media Caption</th>
+                <th>Media ID</th>
+                <th>Media Permalink</th>
+                <th>Media Shortcode</th>
+                <th>Video Thumbnail URL</th>
+                <th>Media Type</th>
+                <th>Media URL</th>
+                <th>Name</th>
+                <th>Media Created</th>
+                <th>Today</th>
+                <th>Username</th>
+                <th>Website</th>
+                <th>Carousel Album Engagement</th>
+                <th>Carousel Album Impressions</th>
+                <th>Carousel Album Reach</th>
+                <th>Carousel Album Saved</th>
+                <th>Comments Count</th>
+                <th>Engagement</th>
+                <th>Media Impressions</th>
+                <th>Like Count</th>
+                <th>Media Reach</th>
+                <th>Unique Saves</th>
+                <th>Story Exits</th>
+                <th>Story Impressions</th>
+                <th>Story Reach</th>
+                <th>Story Replies</th>
+                <th>Taps Back</th>
+                <th>Taps Forward</th>
+                <th>Video Views</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dado in dados %}
+            <tr>
+                <td>{{ dado.id }}</td>
+                <td>{{ dado.profile_id }}</td>
+                <td>{{ dado.data_source }}</td>
+                <td>{{ dado.instagram_id }}</td>
+                <td>{{ dado.media_caption }}</td>
+                <td>{{ dado.media_id }}</td>
+                <td>{{ dado.media_permalink }}</td>
+                <td>{{ dado.media_shortcode }}</td>
+                <td>{{ dado.video_thumbnail_url }}</td>
+                <td>{{ dado.media_type }}</td>
+                <td>{{ dado.media_url }}</td>
+                <td>{{ dado.name }}</td>
+                <td>{{ dado.media_created.strftime('%Y-%m-%d %H:%M:%S') if dado.media_created else '' }}</td>
+                <td>{{ dado.today.strftime('%Y-%m-%d') if dado.today else '' }}</td>
+                <td>{{ dado.username }}</td>
+                <td>{{ dado.website }}</td>
+                <td>{{ dado.carousel_album_engagement }}</td>
+                <td>{{ dado.carousel_album_impressions }}</td>
+                <td>{{ dado.carousel_album_reach }}</td>
+                <td>{{ dado.carousel_album_saved }}</td>
+                <td>{{ dado.comments_count }}</td>
+                <td>{{ dado.engagement }}</td>
+                <td>{{ dado.media_impressions }}</td>
+                <td>{{ dado.like_count }}</td>
+                <td>{{ dado.media_reach }}</td>
+                <td>{{ dado.unique_saves }}</td>
+                <td>{{ dado.story_exits }}</td>
+                <td>{{ dado.story_impressions }}</td>
+                <td>{{ dado.story_reach }}</td>
+                <td>{{ dado.story_replies }}</td>
+                <td>{{ dado.taps_back }}</td>
+                <td>{{ dado.taps_forward }}</td>
+                <td>{{ dado.video_views }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

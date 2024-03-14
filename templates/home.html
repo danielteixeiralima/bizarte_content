@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="trends-container">
+    <h2 class="text-center my-5">Tendências Atuais</h2>
+
+    <!-- Seção de Tendências do Twitter -->
+    <div class="trend-section mb-5">
+        <h3 class="text-center mb-3">Trends do Twitter</h3>
+        <div class="trend-grid">
+            {% for trend in twitter_trends %}
+                <div class="card trend-item">
+                    <div class="card-body">
+                        <h5 class="card-title trend-title">{{ trend.name }}</h5>
+                        <a href="https://twitter.com/search?q={{ trend.name | urlencode }}" target="_blank" class="btn btn-primary">Ver no Twitter</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Seção de Tendências do Google Trends -->
+    <div class="trend-section">
+        <h3 class="text-center mb-3">Trends do Google Trends</h3>
+        <div class="trend-grid">
+            {% for trend in google_trends %}
+                <div class="card trend-item">
+                    <div class="card-body">
+                        <h5 class="card-title trend-title">{{ trend.name }}</h5>
+                        <p class="trend-index">Trend #{{ trend.index }}</p>
+                        <a href="https://www.google.com/search?q={{ trend.name | urlencode }}" target="_blank" class="btn btn-primary">Ver no Google</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Estilos customizados -->
+<!-- Estilos customizados -->
+<style>
+    .trends-container {
+        padding: 20px;
+        background-color: #f8f9fa; /* fundo claro para contraste com os cartões */
+    }
+
+    .trend-section h3 {
+        margin-bottom: 25px;
+        color: #343a40; /* cor escura para títulos */
+    }
+
+    .trend-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px; /* aumenta o espaçamento entre cartões */
+    }
+
+    .trend-item {
+        background-color: #ffffff; /* fundo branco para cartões */
+        border: none;
+        border-radius: 10px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* sombra suave */
+    }
+
+    .trend-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* sombra mais destacada no hover */
+    }
+
+    .card-body {
+        padding: 20px; /* mais espaço dentro do cartão */
+    }
+
+    .card-title {
+        font-size: 1.15rem; /* tamanho de fonte consistente */
+        color: #343a40; /* cor escura para texto */
+        margin-bottom: 15px;
+    }
+
+    .btn-primary {
+        background-color: #007bff; /* cor primária para botões */
+        border-color: #007bff;
+        border-radius: 5px; /* bordas arredondadas para botões */
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3; /* cor mais escura no hover */
+        border-color: #0056b3;
+    }
+
+    @media (max-width: 768px) {
+        .trend-grid {
+            grid-template-columns: 1fr; /* empilha os itens em telas menores */
+        }
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,61 @@
+<!-- materias.html -->
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Matérias Geradas</h1>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Texto</th>
+                    <th scope="col">ID Usuário</th>
+                    <th scope="col">Imagem 0</th>
+                    <th scope="col">Imagem 1</th>
+                    <th scope="col">Imagem 2</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for texto in textos %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('texto_completo', texto_id=texto.id) }}">
+                            {{ texto.texto[:50] }}...
+                        </a>
+                    </td>
+                    <td>{{ texto.id_usuario }}</td>
+                    <td>
+                        {% if texto.imagens0 %}
+                            <img src="data:image/png;base64,{{ texto.imagens0 | b64encode }}" alt="Imagem 0" style="width: 100px; height: auto;">
+                        {% else %}
+                            Sem imagem
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if texto.imagens1 %}
+                            <img src="data:image/png;base64,{{ texto.imagens1 | b64encode }}" alt="Imagem 1" style="width: 100px; height: auto;">
+                        {% else %}
+                            Sem imagem
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if texto.imagens2 %}
+                            <img src="data:image/png;base64,{{ texto.imagens2 | b64encode }}" alt="Imagem 2" style="width: 100px; height: auto;">
+                        {% else %}
+                            Sem imagem
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form action="{{ url_for('delete_texto', texto_id=texto.id) }}" method="post">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar?');">Deletar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

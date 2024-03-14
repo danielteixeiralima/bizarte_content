@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lista de Anúncios</title>
+  <link rel="stylesheet" href="styleLogin.css">
+</head>
+<body>
+  <br><br>
+  <select id="empresa" name="empresa">
+    {% for empresa in empresas %}
+      <option value="{{ empresa.vincular_anuncio }}">{{ empresa.nome_contato }}</option>
+    {% endfor %}
+    </select><br>
+  
+  <br>
+  <br>
+  <button id="filtrar-anuncios" onclick="filtraAnuncios()">Filtrar Anúncios</button>
+  <button id="gerar-relatorio" onclick="gerarRelatorio()">Gerar Relatório</button>
+
+  
+  <table class="styled-table">
+    <thead>
+      <tr>
+        <th>Nome da Empresa</th>
+        <th>Data de Cadastro</th>
+        <th>Campanha</th>
+        <th>Grupo do anúncio</th>
+        <th>Anúncio</th>
+        <th>Valor gasto</th>
+        <th>Impressões</th>
+        <th>Landing page views</th>
+        <th>CPM</th>
+        <th>CTR</th>
+        <th>CPC</th>
+      </tr>
+    </thead>
+    <tbody id="anuncio-table-body" class="styled-table">
+      {% for anuncio in anuncios %}
+      <tr>
+          <td>{{ anuncio.nome_empresa }}</td>
+          <td>{{ anuncio.timestamp }}</td>
+          <td>{{ anuncio.campanha }}</td>
+          <td>{{ anuncio.grupo_anuncio }}</td>
+          <td>{{ anuncio.anuncio }}</td>
+          <td>{{ anuncio.valor_gasto }}</td>
+          <td>{{ anuncio.impressoes }}</td>
+          <td>{{ anuncio.landing_page_views }}</td>
+          <td>{{ anuncio.cpm }}</td>
+          <td>{{ anuncio.ctr }}</td>
+          <td>{{ anuncio.cpc }}</td>
+          
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <script>
+
+window.onload = function() {
+    fetch('/api/anuncios')
+      .then(response => response.json())
+      .then(anuncios => {
+        console.log("Anúncios recebidos:", anuncios); // Imprime os anúncios no console
+
+        // Popula a tabela com os anúncios recebidos
+        populateTable(anuncios);
+
+        const selectEmpresa = document.getElementById('empresa');
+        const empresasAdicionadas = new Set();
+
+        anuncios.forEach(anuncio => {
+          if (!empresasAdicionadas.has(anuncio.nome_empresa)) {
+            const option = document.createElement('option');
+            option.value = anuncio.nome_empresa;
+            option.text = anuncio.nome_empresa;
+            selectEmpresa.appendChild(option);
+            empresasAdicionadas.add(anuncio.nome_empresa);
+          }
+        });
+      }).catch(error => console.error('Erro ao buscar anúncios:', error));
+}
+
+function gerarRelatorio() {
+  var selectElement = document.getElementById('empresa');
+  var empresaName = selectElement.options[selectElement.selectedIndex].value;
+  window.location.href = `/gerar_relatorio?empresa=${encodeURIComponent(empresaName)}`;
+}
+
+function filtraAnuncios() {
+  var selectElement = document.getElementById('empresa');
+  var empresaName = selectElement.options[selectElement.selectedIndex].value;
+  console.log("Nome da empresa selecionada: " + empresaName);
+
+  fetch('/api/anuncios?empresa=' + encodeURIComponent(empresaName))
+    .then(response => {
+      if (!response.ok) {
+        console.log("Erro ao buscar anúncios: " + response.status);
+        throw new Error('Erro ao buscar anúncios');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("Anúncios recuperados com sucesso");
+      populateTable(data);
+    })
+    .catch(error => console.log("Erro: " + error));
+}
+
+  function deleteAnuncio() {
+    if (confirm("Tem certeza de que deseja deletar TODOS os anúncios? Esta ação não pode ser desfeita.")) {
+        fetch('/deletar_anuncios', {
+            method: 'DELETE', // Usando o método DELETE para indicar uma operação de remoção
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Todos os anúncios foram deletados com sucesso');
+                // Recarregar os dados da tabela ou atualizar a página
+                populateTable([]);
+            } else {
+                console.error('Erro ao deletar anúncios:', response.statusText);
+            }
+        })
+        .catch(error => console.error('Falha na requisição:', error));
+    }
+}
+
+    
+
+  function populateTable(data) {
+    var tbody = document.getElementById('anuncio-table-body');
+    tbody.innerHTML = '';
+
+    for (var i = 0; i < data.length; i++) {
+        var tr = document.createElement('tr');
+        
+        var fields = ['nome_empresa', 'timestamp', 'nome_campanha', 'nome_grupo', 'nome_anuncio', 'valor', 'impressoes', 'landing', 'cpm', 'ctr', 'cpc'];
+        for (var j = 0; j < fields.length; j++) {
+            var td = document.createElement('td');
+            td.textContent = data[i][fields[j]];
+            tr.appendChild(td);
+        }
+        var tdAcoes = document.createElement('td');
+
+        var buttonUpdate = document.createElement('button');
+        buttonUpdate.type = 'button';
+        buttonUpdate.className = 'btn btn-warning';
+        buttonUpdate.textContent = 'Atualizar';
+        buttonUpdate.setAttribute('data-id', data[i].id);
+        buttonUpdate.onclick = function () {
+            currentAnuncioId = this.getAttribute('data-id');
+            updateAnuncio();
+        };
+        tdAcoes.appendChild(buttonUpdate);
+
+        var buttonDelete = document.createElement('button');
+        buttonDelete.type = 'button';
+        buttonDelete.className = 'btn btn-danger';
+        buttonDelete.textContent = 'Deletar';
+        buttonDelete.setAttribute('data-id', data[i].id);
+        buttonDelete.onclick = function () {
+            currentAnuncioId = this.getAttribute('data-id');
+            deleteAnuncio();
+        };
+        tdAcoes.appendChild(buttonDelete);
+
+        tr.appendChild(tdAcoes);
+
+        tbody.appendChild(tr);
+    }
+}
+  </script>
+
+{% endblock %}
