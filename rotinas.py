@@ -24,7 +24,7 @@ with app.app_context():
             cargo='Administrador',
             status='Ativo',
             username='admin',
-            password='Omega801',
+            password='omega801',
             id_empresa=empresa.id,
             is_admin=True
         )

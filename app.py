@@ -30,11 +30,20 @@ load_dotenv()  # This is the new line
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-app.config['SECRET_KEY'] = 'sua_chave_secreta_aqui'
+app.secret_key = 'sua_chave_secreta_aqui'
+
+# Obter a URL do banco de dados do ambiente e ajustar se necessário
+url = os.getenv("DATABASE_URL")
+if url and url.startswith("postgres://"):
+    url = url.replace("postgres://", "postgresql://", 1)
+
+# Configurar a URI do banco de dados
+app.config['SQLALCHEMY_DATABASE_URI'] = url or 'sqlite:///site.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db.init_app(app)  # Inicialize a instância de db com o app Flask
+
+db.init_app(app)
 migrate = Migrate(app, db)
+
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
