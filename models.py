@@ -57,7 +57,7 @@ class Usuario(db.Model, UserMixin):
     dayling_3 = db.Column(db.String(200))
     dayling_4 = db.Column(db.String(200))
     dayling_5 = db.Column(db.String(200))
-    password_hash = db.Column(db.String(128))
+    password_hash = db.Column(db.String(300))
     is_admin = db.Column(db.Boolean, default=False)
     def to_dict(self):
         return {
