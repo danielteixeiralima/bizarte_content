@@ -330,7 +330,7 @@ def admin_usuarios():
                 username=form.username.data,
                 password=form.password.data,
                 id_empresa=form.id_empresa.data,
-                is_admin=True
+                is_admin=False
             )
             print(newUser)
             db.session.add(newUser)
@@ -341,6 +341,24 @@ def admin_usuarios():
 
     usuarios = Usuario.query.all()
     return render_template('admin_usuarios.html', form=form, usuarios=usuarios)
+
+@app.route('/editar_perfil', methods=['GET', 'POST'])
+@login_required
+def editar_perfil():
+    usuario = Usuario.query.get(current_user.id)
+    form = UsuarioForm(obj=usuario)
+
+    if form.validate_on_submit():
+        usuario.username = form.username.data
+        if form.new_password.data:
+            usuario.password_hash = generate_password_hash(form.new_password.data)
+        usuario.id_empresa = form.id_empresa.data
+
+        db.session.commit()
+        flash('Perfil atualizado com sucesso!', 'success')
+        return redirect(url_for('editar_perfil'))
+
+    return render_template('editar_perfil.html', form=form)
 
 
 @app.route('/admin/empresas', methods=['GET', 'POST'])
