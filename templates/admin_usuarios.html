@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 
 {% block content %}
@@ -6,74 +5,77 @@
 <div class="container mt-4">
     <h2>Administração de Usuários</h2>
 
-<form method="POST" action="{{ url_for('admin_usuarios') }}" class="mb-4">
-    {{ form.hidden_tag() }}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-    <div class="form-group">
-        {{ form.username.label(class="form-label") }}
-        {{ form.username(class="form-control") }}
-        {% for error in form.username.errors %}
-            <div class="alert alert-danger">{{ error }}</div>
-        {% endfor %}
-    </div>
+    <form method="POST" action="{{ url_for('admin_usuarios') }}" class="mb-4">
+        {{ form.hidden_tag() }}
 
-    <div class="form-group">
-        {{ form.password.label(class="form-label") }}
-        {{ form.password(class="form-control") }}
-        {% for error in form.password.errors %}
-            <div class="alert alert-danger">{{ error }}</div>
-        {% endfor %}
-    </div>
+        <div class="form-group">
+            {{ form.username.label(class="form-label") }}
+            {{ form.username(class="form-control") }}
+            {% for error in form.username.errors %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
 
-    <div class="form-group">
-        {{ form.confirm_password.label(class="form-label") }}
-        {{ form.confirm_password(class="form-control") }}
-        {% for error in form.confirm_password.errors %}
-            <div class="alert alert-danger">{{ error }}</div>
-        {% endfor %}
-    </div>
+        <div class="form-group">
+            {{ form.password.label(class="form-label") }}
+            {{ form.password(class="form-control") }}
+            {% for error in form.password.errors %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
 
-    <div class="form-group">
-        {{ form.id_empresa.label(class="form-label") }}
-        {{ form.id_empresa(class="form-control") }}
-        {% for error in form.id_empresa.errors %}
-            <div class="alert alert-danger">{{ error }}</div>
-        {% endfor %}
-    </div>
+        <div class="form-group">
+            {{ form.confirm_password.label(class="form-label") }}
+            {{ form.confirm_password(class="form-control") }}
+            {% for error in form.confirm_password.errors %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
 
-    <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
-</form>
+        <div class="form-group">
+            {{ form.id_empresa.label(class="form-label") }}
+            {{ form.id_empresa(class="form-control") }}
+            {% for error in form.id_empresa.errors %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nome de Usuário</th>
-            <th>Empresa</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for usuario in usuarios %}
-        <tr>
-            <td>{{ usuario.id }}</td>
-            <td>{{ usuario.username }}</td>
-            <td>{{ usuario.empresa.nome_contato }}</td>
-            <td class="actions">
-                <a href="{{ url_for('editar_usuario', id=usuario.id) }}" class="btn btn-sm btn-info">Editar</a>
-                <form class="delete-form d-inline" action="{{ url_for('excluir_usuario', id=usuario.id) }}" method="post" onsubmit="return confirm('Tem certeza que deseja excluir este usuário?');">
-                    {{ form.hidden_tag() }}
-                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nome de Usuário</th>
+                <th>Empresa</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+            <tr>
+                <td>{{ usuario.username }}</td>
+                <td>{{ usuario.empresa.nome_contato }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('editar_usuario', id=usuario.id) }}" class="btn btn-sm btn-info">Editar</a>
+                    <form class="delete-form d-inline" action="{{ url_for('excluir_usuario', id=usuario.id) }}" method="post" onsubmit="return confirm('Tem certeza que deseja excluir este usuário?');">
+                        {{ form.hidden_tag() }}
+                        <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}
-
-
-
-
-

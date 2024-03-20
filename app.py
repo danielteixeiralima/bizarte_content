@@ -56,16 +56,19 @@ def verify_password(self, password):
         return False
     return check_password_hash(self.password_hash, password)
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    print("dshau")
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         user = Usuario.query.filter_by(username=username).first()
-
+        print("USER: ", username)
         if user:
-            # Verifica se a senha fornecida é correta
+            print("DHSUASUDSU")
+            print(f"Usuário: {username}, Senha fornecida: {password}")  # Debug
+            print(f"Hash da senha armazenada: {user.password_hash}")  # Debug
+
             if user.verify_password(password):
                 login_user(user)
                 return redirect(url_for('home'))
@@ -75,6 +78,7 @@ def login():
             flash('Usuário não encontrado.')
 
     return render_template('login.html')
+
 
 
 @app.route('/logout')
@@ -317,12 +321,23 @@ def admin_usuarios():
             db.session.commit()
             flash('Usuário atualizado com sucesso!', 'success')
         else:
-            # Cria um novo usuário
             hashed_password = generate_password_hash(form.password.data)
-            new_user = Usuario(username=form.username.data, nome=form.username.data, sobrenome=form.username.data, email=form.username.data, celular='21999999999', password=hashed_password, id_empresa=form.id_empresa.data)
-            db.session.add(new_user)
+            empresa = Empresa.query.first()
+            newUser = Usuario(
+                nome=form.username.data,
+                sobrenome=form.username.data,
+                email=form.username.data,
+                celular='99999999',
+                status='Ativo',
+                username=form.username.data,
+                password=form.password.data,
+                id_empresa=form.id_empresa.data,
+                is_admin=True
+            )
+            print(newUser)
+            db.session.add(newUser)
             db.session.commit()
-            flash('Usuário criado com sucesso!', 'success')
+           
         # Redireciona para a mesma página para limpar o formulário ou realizar mais operações
         return redirect(url_for('admin_usuarios'))
 
@@ -351,22 +366,49 @@ def admin_empresas():
 @app.route('/editar_usuario/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editar_usuario(id):
+    # Verifica se o usuário atual tem o username 'admin'
+    if current_user.username != 'admin':
+        flash('Acesso negado. Apenas o administrador pode editar usuários.', 'danger')
+        return redirect(url_for('admin_usuarios'))
+
     usuario = Usuario.query.get_or_404(id)
+
+    # Evita que o usuário 'admin' seja editado por alguém que não seja ele mesmo
+    if usuario.username == 'admin' and current_user.username != 'admin':
+        flash('Não é possível editar o usuário administrador.', 'danger')
+        return redirect(url_for('admin_usuarios'))
+
     form = UsuarioForm(obj=usuario)
 
     if form.validate_on_submit():
-        # atualização dos campos do usuário aqui
+        usuario.username = form.username.data
+        usuario.id_empresa = form.id_empresa.data
+
+        # Atualiza a senha se um novo valor foi fornecido e não é vazio
+        if form.new_password.data:
+            usuario.password_hash = generate_password_hash(form.new_password.data)
+
         db.session.commit()
         flash('Usuário atualizado com sucesso!', 'success')
         return redirect(url_for('admin_usuarios'))
 
-    # Garantir que o objeto usuario está sendo passado para o template
     return render_template('editar_usuario.html', form=form, usuario=usuario)
+
 
 @app.route('/excluir_usuario/<int:id>', methods=['POST'])
 @login_required
 def excluir_usuario(id):
+    # Verifica se o usuário atual tem o username 'admin'
+    if current_user.username != 'admin':
+        flash('Acesso negado. Apenas o administrador pode excluir usuários.', 'danger')
+        return redirect(url_for('admin_usuarios'))
+
     usuario = Usuario.query.get_or_404(id)
+    # Evita que o usuário 'admin' seja excluído
+    if usuario.username == 'admin':
+        flash('Não é possível excluir o usuário administrador.', 'danger')
+        return redirect(url_for('admin_usuarios'))
+
     db.session.delete(usuario)
     db.session.commit()
     flash('Usuário excluído com sucesso!', 'success')

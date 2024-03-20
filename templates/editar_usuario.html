@@ -16,17 +16,15 @@
                 <div class="error">{{ error }}</div>
             {% endfor %}
         </div>
-
+    
         <div class="form-group">
-            {{ form.empresa_id.label(class="form-control-label") }}
-            {{ form.empresa_id(class="form-control") }}
-            {% for error in form.empresa_id.errors %}
+            {{ form.id_empresa.label(class="form-control-label") }}
+            {{ form.id_empresa(class="form-control") }}
+            {% for error in form.id_empresa.errors %}
                 <div class="error">{{ error }}</div>
             {% endfor %}
         </div>
-
-        <!-- Seção de senha removida. Se você quiser permitir a atualização da senha, mantenha apenas os campos de nova senha e confirmação. -->
-
+    
         <div class="form-group">
             {{ form.new_password.label(class="form-control-label") }}
             {{ form.new_password(class="form-control") }}
@@ -34,7 +32,7 @@
                 <div class="error">{{ error }}</div>
             {% endfor %}
         </div>
-
+    
         <div class="form-group">
             {{ form.confirm_new_password.label(class="form-control-label") }}
             {{ form.confirm_new_password(class="form-control") }}
@@ -44,7 +42,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Atualizar Usuário</button>
-    </form>
+</form>
 </div>
 
 {% endblock %}
