@@ -9,17 +9,6 @@
     <form method="POST" action="{{ url_for('editar_usuario', id=usuario.id) }}">
         {{ form.hidden_tag() }}
 
-        {% extends 'base.html' %}
-
-{% block content %}
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-
-
-<div class="container">
-    <h2>Editar Usuário</h2>
-    <form method="POST" action="{{ url_for('editar_usuario', id=usuario.id) }}">
-        {{ form.hidden_tag() }}
-
         <div class="form-group">
             {{ form.username.label(class="form-control-label") }}
             {{ form.username(class="form-control") }}
@@ -38,7 +27,7 @@
     
         <div class="form-group">
             {{ form.new_password.label(class="form-control-label") }}
-            {{ form.new_password(class="form-control") }}
+            {{ form.new_password(class="form-control", required=true, minlength=6) }}
             {% for error in form.new_password.errors %}
                 <div class="error">{{ error }}</div>
             {% endfor %}
@@ -46,19 +35,12 @@
     
         <div class="form-group">
             {{ form.confirm_new_password.label(class="form-control-label") }}
-            {{ form.confirm_new_password(class="form-control") }}
+            {{ form.confirm_new_password(class="form-control", required=true, minlength=6, data_equal_to="form.new_password.data") }}
             {% for error in form.confirm_new_password.errors %}
                 <div class="error">{{ error }}</div>
             {% endfor %}
         </div>
-
-        <button type="submit" class="btn btn-primary">Atualizar Usuário</button>
-</form>
-</div>
-
-{% endblock %}
-
-
+    
         <button type="submit" class="btn btn-primary">Atualizar Usuário</button>
     </form>
 </div>

@@ -65,9 +65,7 @@ def login():
         user = Usuario.query.filter_by(username=username).first()
         print("USER: ", username)
         if user:
-            print("DHSUASUDSU")
-            print(f"Usuário: {username}, Senha fornecida: {password}")  # Debug
-            print(f"Hash da senha armazenada: {user.password_hash}")  # Debug
+           
 
             if user.verify_password(password):
                 login_user(user)
