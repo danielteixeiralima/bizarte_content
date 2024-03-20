@@ -8,7 +8,7 @@ from werkzeug.security import check_password_hash
 csrf = CSRFProtect()
 
 class EmpresaForm(FlaskForm):
-    empresa_id = HiddenField('ID da Empresa')  # Adicionado para edição
+    id_empresa = HiddenField('ID da Empresa')  # Adicionado para edição
     nome = StringField('Nome', validators=[DataRequired(), Length(min=2, max=100)])
     submit = SubmitField('Salvar Empresa')
 
@@ -27,13 +27,13 @@ class UsuarioForm(FlaskForm):
     # Campo para a atualização da senha, sem necessidade da senha atual.
     new_password = PasswordField('Nova Senha', validators=[Optional(), Length(min=6, max=20)])
     confirm_new_password = PasswordField('Confirme a Nova Senha', validators=[EqualTo('new_password', message='As senhas não correspondem.'), Optional()])
-    empresa_id = SelectField('Empresa', coerce=int, validators=[DataRequired()])
+    id_empresa = SelectField('Empresa', coerce=int, validators=[DataRequired()])
     submit = SubmitField('Cadastrar/Atualizar Usuário')
 
     def __init__(self, *args, **kwargs):
         super(UsuarioForm, self).__init__(*args, **kwargs)
         # Inicializa as escolhas de empresa_id a partir do banco de dados.
-        self.empresa_id.choices = [(empresa.id, empresa.nome_contato) for empresa in Empresa.query.all()]
+        self.id_empresa.choices = [(empresa.id, empresa.nome_contato) for empresa in Empresa.query.all()]
 
 
 class TemaForm(FlaskForm):

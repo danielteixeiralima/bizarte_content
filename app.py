@@ -299,34 +299,36 @@ def api_posts():
 @app.route('/admin/usuarios', methods=['GET', 'POST'])
 @login_required
 def admin_usuarios():
-    if not current_user.is_admin:  # Adiciona esta linha para verificar se é admin
+    if not current_user.is_admin:  # Verifica se o usuário é administrador
         flash('Acesso negado. Apenas administradores.', 'danger')
-        return redirect(url_for('index'))  # Redireciona se não for admin
+        return redirect(url_for('index'))  # Redireciona se não for administrador
 
     form = UsuarioForm()
     if form.validate_on_submit():
-        # Checar se estamos criando um novo usuário ou atualizando um existente
+        # Verifica se está criando um novo usuário ou atualizando um existente
         if form.user_id.data:
             usuario = Usuario.query.get_or_404(form.user_id.data)
             usuario.username = form.username.data
-            usuario.empresa_id = form.empresa_id.data
+            usuario.nome = form.username.data  # Atribui o valor de username a nome
+            usuario.id_empresa = form.id_empresa.data
             # Atualiza a senha se um novo valor foi fornecido
             if form.new_password.data:
                 usuario.password = generate_password_hash(form.new_password.data)
             db.session.commit()
             flash('Usuário atualizado com sucesso!', 'success')
         else:
-            # Criar um novo usuário
+            # Cria um novo usuário
             hashed_password = generate_password_hash(form.password.data)
-            new_user = Usuario(username=form.username.data, password=hashed_password, empresa_id=form.empresa_id.data)
+            new_user = Usuario(username=form.username.data, nome=form.username.data, sobrenome=form.username.data, email=form.username.data, celular='21999999999', password=hashed_password, id_empresa=form.id_empresa.data)
             db.session.add(new_user)
             db.session.commit()
             flash('Usuário criado com sucesso!', 'success')
-        # Redirecionar para a mesma página para limpar o formulário ou realizar mais operações
+        # Redireciona para a mesma página para limpar o formulário ou realizar mais operações
         return redirect(url_for('admin_usuarios'))
 
     usuarios = Usuario.query.all()
     return render_template('admin_usuarios.html', form=form, usuarios=usuarios)
+
 
 @app.route('/admin/empresas', methods=['GET', 'POST'])
 @login_required
@@ -415,7 +417,7 @@ def admin_temas():
     form = TemaForm()
     if form.validate_on_submit():
         # Conta quantos temas a empresa do usuário atual já possui
-        count = Tema.query.filter_by(empresa_id=current_user.empresa_id).count()
+        count = Tema.query.filter_by(id_empresa=current_user.id_empresa).count()
 
         # Verifica se a empresa já tem 3 temas
         if count >= 3:
@@ -423,13 +425,13 @@ def admin_temas():
             return redirect(url_for('admin_temas'))
 
         # Se tiver menos de 3 temas, permite a criação de um novo
-        novo_tema = Tema(nome=form.nome.data, usuario_id=current_user.id, empresa_id=current_user.empresa_id)
+        novo_tema = Tema(nome=form.nome.data, usuario_id=current_user.id, id_empresa=current_user.id_empresa)
         db.session.add(novo_tema)
         db.session.commit()
         flash('Tema criado com sucesso!', 'success')
         return redirect(url_for('admin_temas'))
 
-    temas = Tema.query.filter_by(empresa_id=current_user.empresa_id).all()
+    temas = Tema.query.filter_by(id_empresa=current_user.id_empresa).all()
     return render_template('admin_temas.html', form=form, temas=temas)
 
 
@@ -464,17 +466,17 @@ def admin_estilos_de_escrita():
     form = EstiloDeEscritaForm()
     if form.validate_on_submit():
         # Verifica se a empresa do usuário já possui um estilo de escrita
-        existe_estilo = EstiloDeEscrita.query.filter_by(empresa_id=current_user.empresa_id).first()
+        existe_estilo = EstiloDeEscrita.query.filter_by(id_empresa=current_user.id_empresa).first()
         if existe_estilo:
             flash('Cada empresa pode ter apenas um estilo de escrita.', 'danger')
         else:
-            novo_estilo = EstiloDeEscrita(estilo=form.estilo.data, usuario_id=current_user.id, empresa_id=current_user.empresa_id)
+            novo_estilo = EstiloDeEscrita(estilo=form.estilo.data, usuario_id=current_user.id, id_empresa=current_user.id_empresa)
             db.session.add(novo_estilo)
             db.session.commit()
             flash('Estilo de escrita criado com sucesso!', 'success')
         return redirect(url_for('admin_estilos_de_escrita'))
 
-    estilos = EstiloDeEscrita.query.filter_by(empresa_id=current_user.empresa_id).all()
+    estilos = EstiloDeEscrita.query.filter_by(id_empresa=current_user.id_empresa).all()
     return render_template('admin_estilos_de_escrita.html', form=form, estilos=estilos)
 
 @app.route('/editar_estilo/<int:id>', methods=['GET', 'POST'])
@@ -1183,6 +1185,21 @@ def relatorio():
 
     return render_template('relatorio.html', anuncios=anuncios_dict, empresas=empresaNomes)
 
+
+@app.route('/relatorio_posts')
+def relatorio_posts():
+    empresa_selecionada = request.args.get('empresa')
+    if empresa_selecionada:
+        anuncios = PostsInstagram.query.join(Empresa).filter(Empresa.vincular_instagram == empresa_selecionada).all()
+        anuncios_dict = [anuncio.to_dict() for anuncio in anuncios]
+    else:
+        anuncios_dict = []
+    
+    empresaNomes = Empresa.query.filter(
+            (Empresa.vincular_instagram.isnot(None) & (Empresa.vincular_instagram != ''))
+        ).all()
+
+    return render_template('relatorio_posts.html', anuncios=anuncios_dict, empresas=empresaNomes)
 
 @app.route('/api/anuncios')
 def api_anuncios():
