@@ -42,13 +42,7 @@
             {% endfor %}
         </div>
 
-        <div class="form-group">
-            {{ form.id_empresa.label(class="form-label") }}
-            {{ form.id_empresa(class="form-control") }}
-            {% for error in form.id_empresa.errors %}
-                <div class="alert alert-danger">{{ error }}</div>
-            {% endfor %}
-        </div>
+        
 
         <button type="submit" class="btn btn-primary">Atualizar Usuário</button>
     </form>

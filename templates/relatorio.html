@@ -178,13 +178,7 @@ h1 {
 </head>
 <body>
   <div class="container">
-    <div class="empresa-select">
-      <select id="empresa" name="empresa">
-        {% for empresa in empresas %}
-          <option value="{{ empresa.vincular_anuncio }}">{{ empresa.nome_contato }}</option>
-        {% endfor %}
-      </select>
-    </div>
+    
     <div class="date-selection-container">
       <input type="date" id="startDate" class="date-input">
       <input type="date" id="endDate" class="date-input">
@@ -266,10 +260,11 @@ h1 {
 
     <script>
  function fetchAds() {
-  const selectedEmpresa = document.getElementById('empresa').value;
+  const empresa = "{{ current_user.empresa.nome_contato }}";
+  console.log(empresa)
   const startDate = document.getElementById('startDate').value;
   const endDate = document.getElementById('endDate').value;
-  fetch(`/get_ads?empresa=${selectedEmpresa}&startDate=${startDate}&endDate=${endDate}`)
+  fetch(`/get_ads?empresa=${empresa}&startDate=${startDate}&endDate=${endDate}`)
     .then(response => response.json())
     .then(data => {
       const filteredData = filterAdsByDate(data, startDate, endDate);
