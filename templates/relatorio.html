@@ -82,19 +82,50 @@ h1 {
 
 .summary-metrics {
   display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
-  gap: 20px; /* Espaço entre os elementos de métrica */
+  flex-direction: row; /* Define a direção do fluxo para linha */
+  flex-wrap: wrap; /* Permite a quebra de linha conforme necessário */
+  align-items: stretch; /* Garante que os itens se estendam para preencher o contêiner */
+  gap: 20px; /* Espaçamento entre os itens */
+  margin-bottom: 20px; /* Espaçamento abaixo do grupo de métricas */
+}
+.summary-metric h3 {
+  font-size: 1.25rem; /* Reduz o tamanho da fonte dos títulos dos subquadros */
+  color: #333;
+  margin: 10px 0; /* Ajusta o espaçamento em torno do título */
 }
 
+.summary-metric p {
+  font-size: 1rem; /* Reduz o tamanho da fonte do parágrafo */
+  color: #666;
+  font-weight: bold;
+  margin: 5px 0; /* Ajusta o espaçamento em torno do parágrafo */
+}
+
+
 .summary-metric {
-  padding: 10px 20px; /* Ajuste no espaçamento interno */
-  margin-top: 15px;
+  display: flex; /* Habilita flexbox para o alinhamento interno */
+  align-items: center; /* Centraliza o conteúdo do subquadro verticalmente */
+  justify-content: center; /* Centraliza o conteúdo do subquadro horizontalmente */
+  flex: 1; /* Permite que os subquadros cresçam igualmente */
+  padding: 15px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
-  background-color: #f9f9f9; /* Fundo claro para as métricas */
-  flex: 1; /* Faz com que os elementos ocupem o espaço disponível igualmente */
+  background-color: #f9f9f9;
+  min-height: 100px; /* Define uma altura mínima para manter a consistência */
 }
+
+@media (max-width: 767px) {
+  .summary-metric {
+    flex-basis: 100%; /* Faz com que cada subquadro ocupe 100% da largura do contêiner em telas pequenas */
+  }
+}
+
+@media (min-width: 768px) {
+  .summary-metric {
+    flex-basis: calc(50% - 20px); /* Faz com que cada subquadro ocupe aproximadamente metade da largura do contêiner em telas maiores */
+  }
+}
+
 
 .summary-metric.custo {
   background-color: rgba(255, 99, 132, 0.2);
