@@ -472,25 +472,37 @@ def deletar_empresa(id):
 @app.route('/admin/temas', methods=['GET', 'POST'])
 @login_required
 def admin_temas():
+    app.logger.info('Acessando admin_temas')
     form = TemaForm()
     if form.validate_on_submit():
-        # Conta quantos temas a empresa do usuário atual já possui
-        count = Tema.query.filter_by(id_empresa=current_user.id_empresa).count()
+        app.logger.info('Formulário validado')
+        # Aqui foi corrigido para usar `current_user.id_empresa` em vez de `current_user.empresa_id`
+        count = Tema.query.filter_by(empresa_id=current_user.id_empresa).count()
+        app.logger.info(f'Empresa {current_user.id_empresa} possui {count} temas')
 
-        # Verifica se a empresa já tem 3 temas
         if count >= 3:
+            app.logger.warning('Limite de temas atingido')
             flash('A quantidade máxima de temas para cada empresa é 3.', 'danger')
             return redirect(url_for('admin_temas'))
 
-        # Se tiver menos de 3 temas, permite a criação de um novo
-        novo_tema = Tema(nome=form.nome.data, usuario_id=current_user.id, id_empresa=current_user.id_empresa)
+        novo_tema = Tema(nome=form.nome.data, usuario_id=current_user.id, empresa_id=current_user.id_empresa)
         db.session.add(novo_tema)
-        db.session.commit()
-        flash('Tema criado com sucesso!', 'success')
+        try:
+            db.session.commit()
+            app.logger.info(f'Tema {novo_tema.nome} criado com sucesso')
+            flash('Tema criado com sucesso!', 'success')
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error('Erro ao adicionar tema: %s', e, exc_info=True)
+            flash('Erro ao criar tema.', 'danger')
+
         return redirect(url_for('admin_temas'))
 
-    temas = Tema.query.filter_by(id_empresa=current_user.id_empresa).all()
+    # Aqui também foi corrigido para usar `current_user.id_empresa`
+    temas = Tema.query.filter_by(empresa_id=current_user.id_empresa).all()
+    app.logger.info(f'Carregando {len(temas)} temas para a empresa {current_user.id_empresa}')
     return render_template('admin_temas.html', form=form, temas=temas)
+
 
 
 @app.route('/editar_tema/<int:id>', methods=['GET', 'POST'])
@@ -523,19 +535,22 @@ def excluir_tema(id):
 def admin_estilos_de_escrita():
     form = EstiloDeEscritaForm()
     if form.validate_on_submit():
-        # Verifica se a empresa do usuário já possui um estilo de escrita
-        existe_estilo = EstiloDeEscrita.query.filter_by(id_empresa=current_user.id_empresa).first()
+        # Corrigido para usar current_user.empresa.id
+        existe_estilo = EstiloDeEscrita.query.filter_by(empresa_id=current_user.empresa.id).first()
         if existe_estilo:
             flash('Cada empresa pode ter apenas um estilo de escrita.', 'danger')
         else:
-            novo_estilo = EstiloDeEscrita(estilo=form.estilo.data, usuario_id=current_user.id, id_empresa=current_user.id_empresa)
+            # Corrigido para usar current_user.empresa.id
+            novo_estilo = EstiloDeEscrita(estilo=form.estilo.data, usuario_id=current_user.id, empresa_id=current_user.empresa.id)
             db.session.add(novo_estilo)
             db.session.commit()
             flash('Estilo de escrita criado com sucesso!', 'success')
         return redirect(url_for('admin_estilos_de_escrita'))
 
-    estilos = EstiloDeEscrita.query.filter_by(id_empresa=current_user.id_empresa).all()
+    # Corrigido para usar current_user.empresa.id
+    estilos = EstiloDeEscrita.query.filter_by(empresa_id=current_user.empresa.id).all()
     return render_template('admin_estilos_de_escrita.html', form=form, estilos=estilos)
+
 
 @app.route('/editar_estilo/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -636,9 +651,10 @@ def rodar():
             # ------------- Parte 02 --------------------------------------------------------------------------------------------------------
             def perguntar_gpt(pergunta, messages):
                 url = "https://api.openai.com/v1/chat/completions"
+    
                 headers = {
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer " + openai_api_key
+                    "Authorization": "Bearer " + os.getenv("OPENAI_API_KEY")
                 }
 
                 # Adiciona a pergunta atual
@@ -799,9 +815,10 @@ def rodar():
             # ------------- Parte 05 --------------------------------------------------------------------------------------------------------
             def perguntar_gpt(pergunta, messages):
                 url = "https://api.openai.com/v1/chat/completions"
+    
                 headers = {
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer " + os.getenv('OPENAI_API_KEY')
+                    "Authorization": "Bearer " + os.getenv("OPENAI_API_KEY")
                 }
                 messages.append({"role": "user", "content": pergunta})
                 data = {
@@ -900,9 +917,10 @@ def rodar():
             # ------------- Parte 07 --------------------------------------------------------------------------------------------------------
             def perguntar_gpt(pergunta, messages):
                 url = "https://api.openai.com/v1/chat/completions"
+    
                 headers = {
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer " + os.getenv('OPENAI_API_KEY')
+                    "Authorization": "Bearer " + os.getenv("OPENAI_API_KEY")
                 }
 
                 # Adiciona a pergunta atual
